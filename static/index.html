@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>FedQ-LD</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+<link rel="stylesheet" href="css/codemirror.css">
+
+<script src="js/jquery.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<!-- <script src="http://code.jquery.com/jquery-latest.min.js"></script> -->
+<script src="js/main.js"></script>
+<!-- <script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>-->
+<script src="js/codemirror.js"></script>
+<script src="js/sparql.js"></script>
+<script src="js/matchbrackets.js"></script>
+<style type="text/css">
+.CodeMirror {
+	border: 1px solid #eee;
+	height: auto;
+}
+
+.CodeMirror-scroll {
+	overflow-y: hidden;
+	overflow-x: auto;
+}
+</style>
+</head>
+<body>
+
+
+
+	<nav class="navbar navbar-inverse" role="navigation">
+		<!--<div class="navbar-inner">-->
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle" data-toggle="collapse"
+				data-target="#myNavBar">
+				<span class="sr-only">Toggle navigation</span> <span
+					class="icon-bar"></span> <span class="icon-bar"></span> <span
+					class="icon-bar"></span>
+			</button>
+			<a class="navbar-brand" href="#">FedQ-LD</a>
+		</div>
+		<div class="collapse navbar-collapse" id="myNavBar">
+			<ul id="tab" class="nav navbar-nav">
+				<li class="active"><a href="#Tab1" data-toggle="tab">Querying</a></li>
+				<li><a href="#Tab2" data-toggle="tab" id="btnTab2">Configuration</a></li>
+				<!-- <li><a href="#Tab3" data-toggle="tab">Federated querying</a></li> -->
+			</ul>
+		</div>
+	</nav>
+
+	<!--            <div class="row">
+                        <ul id="tab" class="nav nav-pills">
+                            <li class="active"><a href="#Tab1" data-toggle="tab">Data querying</a></li>
+                            <li ><a href="#Tab2" data-toggle="tab">Data loading</a></li>
+                            <li><a href="#Tab3" data-toggle="tab">Federated querying</a></li>
+                        </ul>
+                    </div>-->
+
+	<div class="container">
+
+		<div class="row">
+			<div class="col-xs-1"></div>
+			<div class="tab-content col-xs-10">
+
+
+				<!-- ----------------- -->
+				<!-- Querying tab pane -->
+				<!-- ----------------- -->
+				<div class="tab-pane fade in active" id="Tab1">
+					<div class="row">
+						<div class="page-header">
+							<h2>SPARQL</h2>
+							<p class="lead">Federated Query Processing over Linked Data</p>
+						</div>
+					</div>
+					<div class="row">
+						<form class="form" role="form">
+							<div class="form-group">
+								<select id="fedqSelect" class="form-control">
+									<option value="0" selected="selected">Friends of the
+										author of a selected book</option>
+								</select>
+							</div>
+
+							<div class="form-group">
+								<textarea id="sparqlTextArea" class="form-control" rows="12">
+									
+                                    </textarea>
+							</div>
+						</form>
+					</div>
+					<div class="row">
+
+						<div class="form-group">
+							<button id="btnQuery" type="button"
+								data-loading-text="Querying..." class="btn btn-success">Query</button>
+							<button id="btnQueryPlanExp" type="button"
+								data-loading-text="Generating..." class="btn btn-success"
+								disabled>Query Plan Explanation</button>
+							<button id="btnQuerySolnProcExp" type="button"
+								data-loading-text="Generating..." class="btn btn-success"
+								disabled>Query Solving Process Explanation</button>
+						</div>
+					</div>
+					<div class="row">
+						<table id="tblRes" class="table table-striped"
+							style="table-layout: fixed; word-wrap: break-word">
+							<thead>
+							</thead>
+							<tbody>
+							</tbody>
+						</table>
+					</div>
+
+				</div>
+
+				<!-- ----------------- -->
+				<!-- Configuration tab -->
+				<!-- ----------------- -->
+				<div class="tab-pane fade" id="Tab2">
+					<div class="row">
+						<div class="page-header">
+							<h3>Add SPARQL Endpoints</h3>
+						</div>
+					</div>
+
+					<div class="row">
+						<form class="form" role="form">
+							<div class="form-group">
+								<div class="row">
+									<div class="col-xs-4">
+										<select id="endpointSelect" class="form-control">
+											<option value="0" selected="selected">Sample SPARQL endpoints</option>
+											<option value="1">http://localhost:3030/books/query</option>
+											<option value="2">http://localhost:3031/persons/query</option>
+											<option value="3">http://dbpedia.org/sparql</option>
+										</select>
+									</div>
+									<div class="col-xs-4">
+										<!-- <div class="input-group"> -->
+										<input class="form-control" id="inputEndpointURL" type="text"
+											placeholder="URL of a SPARQL endpoint">
+										<!-- value="http://localhost:3030/books/query"> -->
+									</div>
+									<div class="col-xs-2">
+										<button class="btn btn-primary" id="btnEndpoint"
+											data-loading-text="Adding endpoint..." type="button">Add
+											endpoint</button>
+									</div>
+
+
+								</div>
+							</div>
+
+						</form>
+					</div>
+
+<!-- 					<div class="row">
+						<div class="col-md-8" id="addEndpointResponse"></div>
+					</div> -->
+
+					<div class="row">
+						<!-- <div class="col-md-6"> -->
+						<table id="tblEndpoint" class="table table-striped"
+							style="table-layout: fixed; word-wrap: break-word">
+							<thead>
+							</thead>
+							<tbody>
+							</tbody>
+						</table>
+						<!-- </div> -->
+
+					</div>
+
+					<div class="row">
+						<div class="page-header">
+							<h3>Query Optimization Configuration</h3>
+						</div>
+					</div>
+					<div class="row">
+						<div class="form-group">
+							<div class="checkbox">
+								<label><input id="checkBoundJoin" type="checkbox" checked>
+									Bound Join</label>
+							</div>
+						</div>
+					</div>
+
+				</div>
+
+
+			</div>
+			<!-- end tab Content -->
+			<div class="col-xs-1"></div>
+		</div>
+
+
+		<div class="row">
+			<div class="col-xs-1"></div>
+			<div id="footer" class="text-center col-xs-10"></div>
+			<div class="col-xs-1"></div>
+		</div>
+
+	</div>
+</body>
+</html>

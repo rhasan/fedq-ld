@@ -1,0 +1,9 @@
+TODO Bug report: Element walk does not handle blank nodes in a query properly.
+PREFIX : <http://example/> PREFIX  dc:     <http://purl.org/dc/elements/1.1/> PREFIX foaf: <http://xmlns.com/foaf/0.1/> SELECT * where {     _:b foaf:name "John"@en.     _:c foaf:name "Bob"@en. }
+	Two TriplePath instances:
+	??0 (<http://xmlns.com/foaf/0.1/name>) "John"@en
+	??1 (<http://xmlns.com/foaf/0.1/name>) "Bob"@en
+	
+	triplePath.getSubject().isBlank() returns false
+	triplePath.getSubject().getBlankNodeLabel() does not work
+ 
