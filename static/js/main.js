@@ -230,6 +230,8 @@ $(document).ready(function() {
 	
 	//explain a result
 	$('#tblRes').on("click", "#btnExplainRes", function(e) {
+	    var btn = $(this);
+	    btn.button('Genering..');		
 		var row = $(this).closest("tr");
 		//var jsonObj = [];
 		var item = {};
@@ -246,37 +248,33 @@ $(document).ready(function() {
 	    });
 		
 		
-		console.log(item);
-		//jsonString = JSON.stringify(item);
-		//console.log(jsonString);
+		//console.log(item);
+		var jsonString = JSON.stringify(item);
+		console.log(jsonString);
 		
 		
-//		$.ajax({
-//			type: 'GET',
-//			headers: { 
-//				Accept : "application/json"
-//			},
-//
-//			url: '/dqp/explainResult',
-//			data: item,
-//			//dataType: "application/sparql-results+json",
-//			dataType: "json",
-//			crossDomain: true,
-//			success: function(data, textStatus, jqXHR){
-//				console.log(data);
-//				
-//
-//			},
-//			error: function(jqXHR, textStatus, errorThrown){
-//
-//				console.log(jqXHR.status);
-//				console.log(jqXHR.responseText);
-//
-//
-//			}
-//		}).always(function () {
-//		      btn.button('reset');
-//	    });		
+		$.ajax({
+			type: 'POST',
+			url: '/dqp/explainResult',
+			data: {'result': jsonString},
+			//data:{'test':"test param"},
+		    //contentType: "application/json; charset=utf-8",
+		    //dataType: "json",	
+			crossDomain: true,
+			success: function(data, textStatus, jqXHR){
+				console.log(jqXHR.status);
+				console.log(data);
+			},
+			error: function(jqXHR, textStatus, errorThrown){
+
+				console.log(jqXHR.status);
+				console.log(jqXHR.responseText);
+
+
+			}
+		}).always(function () {
+		      btn.button('reset');
+	    });		
 	});
 });
 

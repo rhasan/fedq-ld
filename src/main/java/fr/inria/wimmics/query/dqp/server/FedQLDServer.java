@@ -17,7 +17,7 @@ import fr.inria.wimmics.common.utils.LoggerLocal;
 
 public class FedQLDServer {
 	private static Logger log = LoggerLocal.getLogger(FedQLDServer.class.getName());
-	private static ServerEnvironment env;
+	//private static ServerEnvironment env;
 	
 	
 	public static void configureStaticResources(List<Handler> hList) {
@@ -32,13 +32,14 @@ public class FedQLDServer {
 
 	}
 	public static void configureServlets(List<Handler> hList) {
-		env = ServerEnvironment.getInstance();
+		//env = ServerEnvironment.getInstance();
 		
 		//env.getDqpEnvironment().addEndpoint("http://localhost:3030/books/query");
 		//env.getDqpEnvironment().addEndpoint("http://localhost:3031/persons/query");		
 		
 		ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
 		context.setContextPath("/dqp");
+		
 		//context.setAttribute("name", object);
 		//context.addServlet(org.eclipse.jetty.servlet.DefaultServlet.class, "/");
 		
@@ -48,6 +49,8 @@ public class FedQLDServer {
 		context.addServlet(AddEndpointServlet.class, "/addEndpoint");
 		context.addServlet(GetEndpointListServlet.class, "/getEndpoints");
 		context.addServlet(RemoveEndpointServlet.class, "/removeEndpoint");
+		context.addServlet(ExplainResultServlet.class, "/explainResult");
+		
 		
 		hList.add(context);
 

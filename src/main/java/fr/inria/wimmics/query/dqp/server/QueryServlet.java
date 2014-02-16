@@ -37,9 +37,9 @@ public class QueryServlet  extends HttpServlet {
 	    		response.setContentType("application/sparql-results+json");
 	    		response.setStatus(HttpServletResponse.SC_OK);
 	    		
-	    		JenaFederatedQueryProcessor processor = new JenaFederatedQueryProcessor(env);
+	    		JenaFederatedQueryProcessor processor = ServerUtils.getJenaQueryProcessorAttribute(request, env);
 	    		ResultSet results = processor.executeSelect(queryString);
-	    		
+	    		//log.info("Result model:"+results.getResourceModel());
 	    		ResultSetFormatter.outputAsJSON(response.getOutputStream(), results);
 	    	} else   {
 	    		

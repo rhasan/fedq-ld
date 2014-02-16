@@ -23,6 +23,9 @@ public class JenaFederatedQueryProcessor implements FederatedQueryProcessor {
 	private QueryDecomposer queryDecomposer;
 	private QueryRouter queryRouter;
 	private ResultIntegrator resultIntegrator;
+	private Model virtualModel;
+	private Query query;
+	private List<DecomposedQuery> decomposedQueries;
 	
 	public JenaFederatedQueryProcessor(Environment env) {
 		this.env = env;
@@ -40,26 +43,37 @@ public class JenaFederatedQueryProcessor implements FederatedQueryProcessor {
 
 	public ResultSet executeSelect(String queryString) {
 		
-		Query query = QueryFactory.create(queryString);
+		query = QueryFactory.create(queryString);
 		
 		//subquery source selection
 		//TODO global caching in source selection
 		sourceSelecter.selectSources(query);
 		
 		//decompose
-		List<DecomposedQuery> decomposedQueries = queryDecomposer.decomposeQuery(query);
+		decomposedQueries = queryDecomposer.decomposeQuery(query);
 		
 		//TODO optimizations: filter optimization
 		
 		//query routing
 		//TODO bound join
-		Model virtualModel = queryRouter.routQueries(decomposedQueries);
+		virtualModel = queryRouter.routQueries(decomposedQueries);
 		
 		
 		//result integration
 		ResultSet results = resultIntegrator.integrateResults(virtualModel, query);
 		
 		return results;
+	}
+	
+	public List<DecomposedQuery> getDecomposedQueries() {
+		return decomposedQueries;
+	}
+	
+	public Model getVirtualModel() {
+		return virtualModel;
+	}
+	public Query getQuery() {
+		return query;
 	}
 
 }

@@ -90,7 +90,7 @@ public class AppTest
         		
         		
         	}
-        	QuerySolution qsTest = JenaExplanationUtils.convertToQuerySolution(model, vars, vals);
+        	QuerySolution qsTest = JenaExplanationUtils.convertToResultBinding(model, vars, vals);
         	//log.info("convertToQuerySolution:"+qsTest);
         	log.info(qsTest);
         	//log.info(rbd.getBinding().getClass());
