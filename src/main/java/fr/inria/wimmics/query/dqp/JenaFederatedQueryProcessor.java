@@ -50,12 +50,17 @@ public class JenaFederatedQueryProcessor implements FederatedQueryProcessor {
 		sourceSelecter.selectSources(query);
 		
 		//decompose
+		//TODO implement a count for how many endpoints can solve a triple pattern, 
+		//then group only the triple patterns which can be solved by only one endpoint,
+		// if a triple pattern can be solved by more than one endpoint,
+		// send a query with only that triple pattern to all the corresponding endpoints
 		decomposedQueries = queryDecomposer.decomposeQuery(query);
 		
 		//TODO optimizations: filter optimization
 		
 		//query routing
-		//TODO bound join
+		//TODO in bound join, keep trace of all the variable boundings - not only the previous query result variable bindings
+		//TODO bound join flag check
 		virtualModel = queryRouter.routQueries(decomposedQueries);
 		
 		

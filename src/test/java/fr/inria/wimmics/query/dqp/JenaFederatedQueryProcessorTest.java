@@ -54,8 +54,9 @@ public class JenaFederatedQueryProcessorTest {
 //				"}";
 		
 		List<String> endpoints = new ArrayList<String>();
-		endpoints.add("http://localhost:3031/persons/query");
 		endpoints.add("http://localhost:3030/books/query");
+		endpoints.add("http://localhost:3031/persons/query");
+		
 		
 		
 		Environment env = new Environment(endpoints);
