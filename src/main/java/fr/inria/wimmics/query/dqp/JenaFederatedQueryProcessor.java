@@ -46,21 +46,25 @@ public class JenaFederatedQueryProcessor implements FederatedQueryProcessor {
 		query = QueryFactory.create(queryString);
 		
 		//subquery source selection
-		//TODO global caching in source selection
+		//TODO global caching in source selection, now it's a session caching
 		sourceSelecter.selectSources(query);
 		
 		//decompose
-		//TODO implement a count for how many endpoints can solve a triple pattern, 
+		//TODO - partially done - to be tested - usecase ? rdf:type ? 
+		// implement a count for how many endpoints can solve a triple pattern, 
 		//then group only the triple patterns which can be solved by only one endpoint,
 		// if a triple pattern can be solved by more than one endpoint,
 		// send a query with only that triple pattern to all the corresponding endpoints
+		//ref: Querying Distributed RDF Data Sources with SPARQL
 		decomposedQueries = queryDecomposer.decomposeQuery(query);
 		
 		//TODO optimizations: filter optimization
+		//static optimizations here
+		
 		
 		//query routing
-		//TODO in bound join, keep trace of all the variable boundings - not only the previous query result variable bindings
-		//TODO bound join flag check
+		//DONE in bound join, keep trace of all the variable bindings - not only the previous query result variable bindings
+		//DONE bound join flag check
 		virtualModel = queryRouter.routQueries(decomposedQueries);
 		
 		

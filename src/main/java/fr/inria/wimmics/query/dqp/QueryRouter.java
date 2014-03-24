@@ -23,14 +23,16 @@ import fr.inria.wimmics.query.jena.utils.BoundJoinUtils;
 public class QueryRouter {
 	Logger log = LoggerLocal.getLogger(QueryRouter.class.getName());
 	private Environment env;
-	private  Map<Var, HashSet<Node>> allBindingsValueMap;
-	private List<Binding> allBindingList;
+	//private  Map<Var, HashSet<Node>> allBindingsValueMap;
+	//private List<Binding> allBindingList;
+	Map<Var, HashSet<Binding> > hashJoinMappings;
 	
 	public QueryRouter(Environment env) {
 		this.env = env;
 		if(env.getBoundJoin()) {
-			allBindingsValueMap = new HashMap<Var, HashSet<Node>>();
-			allBindingList  = new ArrayList<Binding>();
+			//allBindingsValueMap = new HashMap<Var, HashSet<Node>>();
+			//allBindingList  = new ArrayList<Binding>();
+			hashJoinMappings = new HashMap<Var, HashSet<Binding>>();
 		}
 	}
 	
@@ -46,7 +48,8 @@ public class QueryRouter {
 			// TODO [bound join] bound values (for common variables) from the previous subquery in the current subquery
 			if(env.getBoundJoin() && prevModel != null) {
 				//BoundJoinUtils.convertToBoundJoinQuery(prevModel, prevQuery, dcq.getQuery());
-				BoundJoinUtils.updateBoundJoinQueryAndBindings(prevModel, prevQuery, dcq.getQuery(), allBindingsValueMap,allBindingList);
+				//BoundJoinUtils.updateBoundJoinQueryAndBindings(prevModel, prevQuery, dcq.getQuery(), allBindingsValueMap, allBindingList, hashJoinMappings);
+				BoundJoinUtils.updateBoundJoinQueryAndBindings(prevModel, prevQuery, dcq.getQuery(), hashJoinMappings);
 			}
 			
 			QueryExecution qe = QueryExecutionFactory.sparqlService(dcq.getEndpoint(), dcq.getQuery());

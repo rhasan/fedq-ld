@@ -56,6 +56,14 @@ public class EndpointTriplePatternIndex {
 		return index.containsKey(qtp.getEncodedTriplePattern());
 	}
 	
+	public int triplePatternSolutionEndpointCount(QueryTriplePattern qtp) {
+		//return index.containsKey(qtp.getEncodedTriplePattern());
+		if(contains(qtp)==false) 
+			return 0;
+		return index.get(qtp.getEncodedTriplePattern()).size();
+	}
+	
+	
 	public List<String> getEndpoints(QueryTriplePattern qtp) {
 		HashSet<String> endpoints = index.get(qtp.getEncodedTriplePattern());
 		List<String> list = new ArrayList<String>(endpoints);

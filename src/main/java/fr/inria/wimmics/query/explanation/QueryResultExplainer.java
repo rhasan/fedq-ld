@@ -21,7 +21,7 @@ public class QueryResultExplainer {
 	private static Logger log = LoggerLocal.getLogger(QueryResultExplainer.class.getName()); 
 	public static Model explainQueryResult(Model model, Query query, ResultBinding result) {
 		Model expModel = ModelFactory.createDefaultModel();
-		// variable binding in a explanation construct query
+		// variable binding in an explanation construct query
 		Query explQuery = JenaExplanationUtils.buildExplanationQuery(query, result);
 		
 		QueryExecution qe = QueryExecutionFactory.create(explQuery,model);

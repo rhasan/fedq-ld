@@ -24,6 +24,7 @@ import com.hp.hpl.jena.sparql.core.Var;
 import com.hp.hpl.jena.sparql.engine.binding.Binding;
 import com.hp.hpl.jena.sparql.engine.binding.BindingHashMap;
 import com.hp.hpl.jena.sparql.expr.Expr;
+import com.hp.hpl.jena.tdb.store.Hash;
 
 import fr.inria.wimmics.common.utils.LoggerLocal;
 
@@ -120,7 +121,8 @@ public class BoundJoinUtils {
 
 	}
 	
-	public static void updateBoundJoinQueryAndBindings(Model prevModel, Query prevQuery, Query currentQuery, Map<Var, HashSet<Node>> allBindings, List<Binding> allBindingList) {
+	//public static void updateBoundJoinQueryAndBindings(Model prevModel, Query prevQuery, Query currentQuery, Map<Var, HashSet<Node>> allBindings, List<Binding> allBindingList, Map<Var, HashSet<Binding> > hashJoinMappings) {
+	public static void updateBoundJoinQueryAndBindings(Model prevModel, Query prevQuery, Query currentQuery,  Map<Var, HashSet<Binding> > hashJoinMappings) {
 		
 		//Map<Var, HashSet<Node>> allBindings = new HashMap<Var, HashSet<Node>>();
 	
@@ -141,6 +143,8 @@ public class BoundJoinUtils {
 		List<Binding> prevBindings = new ArrayList<Binding>();
 		//List<Var> prevVars = new ArrayList<Var>();
 		
+		//query ran only on the previous query result to retrieve the variable mappings, not that expensive. 
+		//Had to do it because variable mappings can't be extracted from jena executeConstruct results.
 		QueryExecution qe = QueryExecutionFactory.create(tQuery, prevModel);
 		ResultSet rSet = qe.execSelect();
 		
@@ -149,7 +153,7 @@ public class BoundJoinUtils {
 			Binding b = rSet.nextBinding();
 			//log.info(b);
 			prevBindings.add(b);
-			allBindingList.add(b);
+			//allBindingList.add(b);
 			
 //			if(prevVars.isEmpty()) {
 //				Iterator<Var> itVar = b.vars();
@@ -163,17 +167,34 @@ public class BoundJoinUtils {
 		for(Binding b:prevBindings) {
 			
 			Iterator<Var> itVar = b.vars();
+			//ignore the blank nodes here
 			while(itVar.hasNext()) {
 				Var v = itVar.next();
 				Node n = b.get(v);
-				HashSet<Node> nodes = null;
-				if(allBindings.containsKey(v)) {
-					nodes = allBindings.get(v);
+				if(n.isBlank()) {
+					log.info("ignore blank node check, Binding ignored");
+					break;
+				}				
+				
+				HashSet<Binding> bindings = null;
+				if(hashJoinMappings.containsKey(v)) {
+					bindings = hashJoinMappings.get(v);
 				} else {
-					nodes = new HashSet<Node>();
-					allBindings.put(v, nodes);
+					bindings = new HashSet<Binding>();
 				}
-				nodes.add(n);
+				bindings.add(b);
+				hashJoinMappings.put(v, bindings);
+				
+				
+//				Node n = b.get(v);
+//				HashSet<Node> nodes = null;
+//				if(allBindings.containsKey(v)) {
+//					nodes = allBindings.get(v);
+//				} else {
+//					nodes = new HashSet<Node>();
+//					allBindings.put(v, nodes);
+//				}
+//				nodes.add(n);
 				
 			}
 			
@@ -181,24 +202,33 @@ public class BoundJoinUtils {
 		
 		
 		List<Var> currentVars = JenaQueryUtils.getQueryPatternVars(currentQuery);
+		log.info("Current variables:"+currentVars.size());
 		
+		HashSet<Binding> selectedBindings = new HashSet<Binding>();
+		
+		HashSet<Binding> preSelectedBindings = new HashSet<Binding>();
 		
 		
 		List<Var> commonVars = new ArrayList<Var>();
 		for(Var v:currentVars) {
-			for(Var vv:allBindings.keySet()) {
-				if(v.getName().equals(vv.getName())) {
-					commonVars.add(v);
+			if(hashJoinMappings.containsKey(v)) {
+				commonVars.add(v);
+				
+				log.info("Processing variable:"+v);
+				if(hashJoinMappings.containsKey(v)) {
+					
+					preSelectedBindings.addAll(hashJoinMappings.get(v));
 				}
 			}
 		}
 		
 		
+		log.info("Common variables:"+commonVars.size());
 		
 		
-		HashSet<Binding> selectedBindings = new HashSet<Binding>();
 		
-		for(Binding b:allBindingList) {
+		//DONE upgrade to hash join, allBindingList should be a hash like [var1] -> {binding1, binding2, binding 3} or [var1] ->{node1,node2,node3}--which we already have in allBindings
+		for(Binding b:preSelectedBindings) {
 			log.info("Processing binding:"+b);
 			BindingHashMap bb = new BindingHashMap();
 			//boolean considerBinding = true;
@@ -209,12 +239,6 @@ public class BoundJoinUtils {
 				}
 				
 				Node n = b.get(v);
-				//log.info(v+"="+n);
-				if(n.isBlank()) {
-					log.info("ignore blank node check, Binding ignored");
-					//continue;
-					break;
-				}
 				bb.add(v, n);
 
 			}
@@ -228,7 +252,8 @@ public class BoundJoinUtils {
 		List<Binding> finalBindings = new ArrayList<Binding>(selectedBindings);
 		
 
-		currentQuery.setValuesDataBlock(commonVars, finalBindings);
+		if(commonVars.size()>0) //if there is no common variable in the current query and intermediate results, the overall result is a Cartesian product
+			currentQuery.setValuesDataBlock(commonVars, finalBindings);
 		
 		log.info("Bound join modified query: "+ currentQuery);
 

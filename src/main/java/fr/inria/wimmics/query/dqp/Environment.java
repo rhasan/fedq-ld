@@ -11,6 +11,7 @@ public class Environment {
 	//Model model=null;
 	private EndpointTriplePatternIndex endpointTriplePatternIndex;
 	private boolean boundJoin = false;
+	private boolean askSessionCache = false;
 
 	
 	public Environment() {
@@ -65,5 +66,12 @@ public class Environment {
 	}
 	public boolean getBoundJoin() {
 		return boundJoin;
+	}
+	
+	public void setAskSessionCache(boolean askSessionCache) {
+		this.askSessionCache = askSessionCache;
+	}
+	public boolean isAskSessionCache() {
+		return askSessionCache;
 	}
 }

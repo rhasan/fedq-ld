@@ -26,6 +26,7 @@ public class QueryDecomposer {
 	public List<DecomposedQuery> decomposeQuery(Query query) {
 
 		List<DecomposedQuery> decomposedQueries = new ArrayList<DecomposedQuery>();
+		List<QueryTriplePattern> unprocessedTriplePatterns = new ArrayList<QueryTriplePattern>();
 
 		for(String endpoint:env.getEndpoints()) {
 			log.info("Decomposing for endpoint :"+endpoint);
@@ -38,8 +39,13 @@ public class QueryDecomposer {
 			List<Triple> triples = new ArrayList<Triple>();
 			for(QueryTriplePattern qtp:env.getEndpointTriplePatternIndex().getQueryTriplePatternFromInverseIndex(endpoint)) {
 				log.info(qtp.getTriplePath());
-				block.addTriplePath(qtp.getTriplePath());
-				triples.add(qtp.getTriplePath().asTriple());
+				if(env.getEndpointTriplePatternIndex().triplePatternSolutionEndpointCount(qtp)==1) {
+				
+					block.addTriplePath(qtp.getTriplePath());
+					triples.add(qtp.getTriplePath().asTriple());
+				} else if(env.getEndpointTriplePatternIndex().triplePatternSolutionEndpointCount(qtp)>1) {
+					unprocessedTriplePatterns.add(qtp);
+				}
 			}
 			//ElementService srvc = new ElementService(endpoint, block);
 			
@@ -63,9 +69,37 @@ public class QueryDecomposer {
 			log.info(decomposedQuery);		
 			
 		}
+		
+		for(QueryTriplePattern qtp:unprocessedTriplePatterns) {
+			log.info("Single triple pattern sub-query"+qtp.getTriplePath());
+			ElementPathBlock block = new ElementPathBlock();
+			block.addTriplePath(qtp.getTriplePath());
+			List<Triple> triples = new ArrayList<Triple>();
+			triples.add(qtp.getTriplePath().asTriple());
+			
+			
+			ElementGroup body = new ElementGroup();
+			body.addElement(block);
+			Query decomposedQuery = QueryFactory.make();
+			decomposedQuery.setQueryConstructType();
+			BasicPattern bgp = BasicPattern.wrap(triples);
+			Template templ = new Template(bgp);
+
+			
+			decomposedQuery.setQueryPattern(body);
+			decomposedQuery.setConstructTemplate(templ);
+			decomposedQuery.setResultVars();
+			
+			for(String endpoint:env.getEndpointTriplePatternIndex().getEndpoints(qtp)) {
+
+				DecomposedQuery dq = new DecomposedQuery(decomposedQuery, endpoint);
+				decomposedQueries.add(dq);
+				log.info(decomposedQuery);
+			}
+		
+		}
+
 		return decomposedQueries;
-		
-		
 
 	}
 }

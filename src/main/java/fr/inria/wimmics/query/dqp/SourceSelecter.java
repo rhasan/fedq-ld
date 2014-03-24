@@ -31,7 +31,7 @@ public class SourceSelecter {
 				//a cache of triple pattern -> endpoint index for user session
 				boolean ask = false;
 				
-				if(env.getEndpointTriplePatternIndex().contains(qtp)) {
+				if(env.isAskSessionCache()==true && env.getEndpointTriplePatternIndex().contains(qtp)) {
 					List<String> eps = env.getEndpointTriplePatternIndex().getEndpoints(qtp);
 					if(eps.contains(endpoint)) {
 						ask = true;
