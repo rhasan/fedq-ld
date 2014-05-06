@@ -112,11 +112,22 @@ public class JenaExplanationUtils {
 		BasicPattern bgp = BasicPattern.wrap(triples);
 		Template templ = new Template(bgp);
 		ElementGroup body = new ElementGroup();
-		body.addElement(queryPatternBlock);
+		//body.addElement(queryPatternBlock);
+		body.addElement(query.getQueryPattern());
 		
 		newQuery.setQueryPattern(body);
 		newQuery.setConstructTemplate(templ);
+//		if(query.hasLimit()) {
+//			newQuery.setLimit(query.getLimit());
+//		}
+//		if(query.hasOffset()) {
+//			newQuery.setOffset(query.getOffset());
+//		}
+//		if(query.hasAggregators()) {
+//			
+//		}
 		
+		//variable bindings
 		List<Var> vars = new ArrayList<Var>();
 		Iterator<Var> varIt = result.getBinding().vars();
 		while(varIt.hasNext()) {
