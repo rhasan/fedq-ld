@@ -111,4 +111,7 @@ public class Environment {
 		String key = st.toString();
 		return tripleSourceSubIndex.get(key);
 	}
+	public void clearTripleSourceSubqueryIndex() {
+		tripleSourceSubIndex.clear();
+	}
 }

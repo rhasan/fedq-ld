@@ -21,6 +21,7 @@ public class SourceSelecter {
 		
 		List<QueryTriplePattern> askQueries = JenaQueryUtils.getAskQueriesForTriplePaths(query);
 		env.getEndpointTriplePatternIndex().clear();
+		env.clearTripleSourceSubqueryIndex();
 		//env.getEndpointTriplePatternIndex().printIndexMap();
 		//TODO: parallel execution
 		for(QueryTriplePattern qtp:askQueries) {
