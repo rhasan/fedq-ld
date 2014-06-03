@@ -17,6 +17,7 @@ import com.hp.hpl.jena.sparql.core.ResultBinding;
 import com.hp.hpl.jena.util.FileManager;
 
 import fr.inria.wimmics.query.explanation.JenaExplanationUtils;
+import fr.inria.wimmics.query.explanation.QueryResultExplainer;
 
 public class QueryManipulation {
 	
@@ -47,9 +48,10 @@ public class QueryManipulation {
 		
 		//System.out.println(m);
 		//query.setQueryConstructType();
-		//System.out.println(query);
+		System.out.println(query);
 		//System.out.println(query.getQueryPattern());
-		System.out.println(JenaExplanationUtils.buildExplanationQuery(query, result));
+		//System.out.println(JenaExplanationUtils.buildExplanationQuery(query, result));
+		System.out.println(QueryResultExplainer.explainQueryResult(m, query, result));
 		
 
 	}

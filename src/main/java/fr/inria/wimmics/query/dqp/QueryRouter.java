@@ -14,10 +14,14 @@ import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.sparql.core.Var;
 import com.hp.hpl.jena.sparql.engine.binding.Binding;
 
 import fr.inria.wimmics.common.utils.LoggerLocal;
+import fr.inria.wimmics.query.explanation.ExplanationMetaModel;
+import fr.inria.wimmics.query.explanation.SourceSubqueryMeta;
 import fr.inria.wimmics.query.jena.utils.BoundJoinUtils;
 
 public class QueryRouter {
@@ -38,9 +42,11 @@ public class QueryRouter {
 	
 	public Model routQueries(List<DecomposedQuery> queries) {
 		Model model = ModelFactory.createDefaultModel();
+		//List<ExplanationMetaModel> expMetaModelList = new ArrayList<ExplanationMetaModel>();
 		
 		Model prevModel = null;
 		Query prevQuery = null;
+		
 		for(DecomposedQuery dcq:queries) {
 			
 			log.info("Sending subquery to: "+dcq.getEndpoint());
@@ -64,6 +70,27 @@ public class QueryRouter {
 			//log.info("Triples: "+m);
 			log.info("Number of triples: "+m.size());
 			model.add(m);
+			
+			
+			SourceSubqueryMeta meta = new SourceSubqueryMeta();
+			meta.setSource(dcq.getEndpoint());
+			meta.setSubquery(dcq.getQuery());
+			
+			
+			StmtIterator it = m.listStatements();
+			while(it.hasNext()) {
+				Statement stmt = it.next();
+				log.info(stmt.toString());
+				env.insertTripleSourceSubqueryMeta(stmt, meta);
+			}
+
+			
+			//ExplanationMetaModel expMetaModel = new ExplanationMetaModel();
+			//expMetaModel.setModel(m);
+			//expMetaModel.setSource(dcq.getEndpoint());
+			//expMetaModel.setSubquery(dcq.getQuery());
+			
+			//expMetaModelList.add(expMetaModel);
 			
 		}
 		//env.setModel(model);

@@ -1,9 +1,15 @@
 package fr.inria.wimmics.query.dqp;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Statement;
+
+import fr.inria.wimmics.query.explanation.SourceSubqueryMeta;
 
 public class Environment {
 	private List<String> endpoints = null;
@@ -13,6 +19,9 @@ public class Environment {
 	private boolean boundJoin = false;
 	private boolean askSessionCache = false;
 
+	
+	private Map<String, HashSet<SourceSubqueryMeta>> tripleSourceSubIndex = new HashMap<String, HashSet<SourceSubqueryMeta>>();
+	
 	
 	public Environment() {
 		endpointTriplePatternIndex = new EndpointTriplePatternIndex();
@@ -73,5 +82,33 @@ public class Environment {
 	}
 	public boolean isAskSessionCache() {
 		return askSessionCache;
+	}
+	
+	
+	
+	public void insertTripleSourceSubqueryMeta(Statement st, SourceSubqueryMeta meta) {
+		String key = st.toString();
+		
+		HashSet<SourceSubqueryMeta> set = null;
+		
+		if(tripleSourceSubIndex.containsKey(key)) {
+			set = tripleSourceSubIndex.get(key);
+		} else {
+			set = new HashSet<SourceSubqueryMeta>();
+			tripleSourceSubIndex.put(key, set);
+		}
+		
+		set.add(meta);
+	}
+	
+	public boolean containsInTripleSourceSubqueryIndex(Statement st) {
+		String key = st.toString();
+		return tripleSourceSubIndex.containsKey(key);
+	}
+	
+	
+	public HashSet<SourceSubqueryMeta> getValeuFromTripleSourceSubqueryIndex(Statement st) {
+		String key = st.toString();
+		return tripleSourceSubIndex.get(key);
 	}
 }
