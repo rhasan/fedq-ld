@@ -64,6 +64,8 @@ public class ExplainResultServlet extends HttpServlet {
 		Model m = QueryResultExplainer.explainQueryResult(queryProcessor.getVirtualModel(), queryProcessor.getQuery(), soln);
 		
 		Map<SourceSubqueryMeta, HashSet<String>> sourceSubqueryTriple = new HashMap<SourceSubqueryMeta, HashSet<String>>();
+		
+		
 		StmtIterator it = m.listStatements();
 		while(it.hasNext()) {
 			Statement st = it.next();
@@ -85,7 +87,7 @@ public class ExplainResultServlet extends HttpServlet {
 			}
 		}
 		
-		
+		log.info("Explanation");
 		for(Entry<SourceSubqueryMeta,HashSet<String>>  entry: sourceSubqueryTriple.entrySet()) {
 			SourceSubqueryMeta meta = entry.getKey();
 			HashSet<String> set = entry.getValue();

@@ -33,7 +33,7 @@ public class QueryResultExplainer {
 		RDFDataMgr.write(wr, expModel, Lang.TRIG);
 		
 		
-		log.info("Explanation model:\n"+wr.getBuffer().toString());
+		//log.info("Explanation model:\n"+wr.getBuffer().toString());
 		return expModel;
 	}
 

@@ -80,7 +80,7 @@ public class QueryRouter {
 			StmtIterator it = m.listStatements();
 			while(it.hasNext()) {
 				Statement stmt = it.next();
-				log.info(stmt.toString());
+				//log.info(stmt.toString());
 				env.insertTripleSourceSubqueryMeta(stmt, meta);
 			}
 
